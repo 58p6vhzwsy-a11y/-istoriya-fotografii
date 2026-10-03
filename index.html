@@ -1,0 +1,1843 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>История фотографии</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #F5F1E8;
+      color: #24384A;
+      line-height: 1.6;
+    }
+
+    header {
+      background:
+        linear-gradient(rgba(28, 67, 94, 0.48), rgba(28, 67, 94, 0.48)),
+        url("https://commons.wikimedia.org/wiki/Special:FilePath/Talbot%2C%20William%20Henry%20Fox%20-%20Apparate%2C%20die%20Talbot%20benutzte%20%28Zeno%20Fotografie%29.jpg");
+      background-size: cover;
+      background-position: center;
+      color: #FFFFFF;
+      text-align: center;
+      padding: 70px 20px;
+    }
+
+    header h1 {
+      margin: 0 0 12px;
+      font-family: "Playfair Display", serif;
+      font-size: 46px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: #F3E5D0;
+    }
+
+    header p {
+      margin: 0;
+      color: #D9E6EE;
+      font-size: 18px;
+    }
+
+    nav {
+      background: #294A64;
+      display: flex;
+      gap: 8px;
+      padding: 10px 15px;
+      overflow-x: auto;
+      white-space: nowrap;
+      scrollbar-width: none;
+    }
+
+    nav::-webkit-scrollbar {
+      display: none;
+    }
+
+    nav a {
+      flex: 0 0 auto;
+      text-decoration: none;
+      color: white;
+      background: #416783;
+      padding: 10px 16px;
+      border-radius: 9px;
+      font-weight: bold;
+    }
+
+    nav a:hover {
+      background: #5B7E99;
+    }
+
+    main {
+      max-width: 1000px;
+      margin: 30px auto;
+      padding: 0 20px;
+    }
+
+    section {
+      background: #FFFDF8;
+      border-radius: 18px;
+      padding: 30px;
+      margin-bottom: 25px;
+      box-shadow: 0 5px 18px rgba(22, 45, 67, 0.08);
+    }
+
+    h2 {
+      margin-top: 0;
+      color: #244B68;
+      font-family: "Playfair Display", serif;
+      font-size: 30px;
+    }
+
+    h3 {
+      color: #244B68;
+    }
+
+    .term {
+      display: inline;
+      color: #416783;
+      font-weight: bold;
+      text-decoration: underline;
+      text-decoration-style: dotted;
+      text-decoration-thickness: 2px;
+      text-underline-offset: 3px;
+      cursor: pointer;
+      transition: color 0.2s ease;
+    }
+
+    .term:hover {
+      color: #294A64;
+    }
+
+    /* Люди */
+
+    .people {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-top: 25px;
+    }
+
+    .person-card {
+      background: #F5F1E8;
+      border: 1px solid #D9E1E6;
+      border-radius: 16px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .person-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 20px rgba(22, 45, 67, 0.12);
+    }
+
+    .person-card img {
+      width: 100%;
+      height: 280px;
+      object-fit: cover;
+      object-position: center top;
+      display: block;
+      background: #D9E1E6;
+    }
+
+    .person-info {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    .person-info h3 {
+      margin: 0 0 10px;
+      font-family: "Playfair Display", serif;
+      font-size: 22px;
+    }
+
+    .person-short {
+      margin-top: 0;
+      margin-bottom: 15px;
+    }
+
+    .person-more-button {
+      margin-top: auto;
+      width: 100%;
+      border: none;
+      border-radius: 10px;
+      padding: 12px 15px;
+      background: #416783;
+      color: white;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .person-more-button:hover {
+      background: #294A64;
+    }
+
+    .person-more {
+      display: none;
+      margin-top: 15px;
+      padding-top: 15px;
+      border-top: 1px solid #D9E1E6;
+    }
+
+    .person-card.active .person-more {
+      display: block;
+    }
+
+    .person-card.active .person-more-button {
+      background: #294A64;
+    }
+
+    /* Таймлайн */
+
+    .timeline {
+      margin-top: 20px;
+    }
+
+    .timeline-item {
+      margin-bottom: 14px;
+      border: 1px solid #D9E1E6;
+      border-radius: 15px;
+      overflow: hidden;
+      background: #F5F1E8;
+    }
+
+    .timeline-button {
+      width: 100%;
+      border: none;
+      background: transparent;
+      color: #244B68;
+      padding: 18px 20px;
+      font-family: Arial, sans-serif;
+      font-size: 20px;
+      font-weight: bold;
+      text-align: left;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .timeline-button span:last-child {
+      font-size: 25px;
+      color: #416783;
+      line-height: 1;
+    }
+
+    .timeline-content {
+      max-height: 0;
+      overflow: hidden;
+      padding: 0 20px;
+      transition: max-height 0.35s ease, padding 0.35s ease;
+    }
+
+    .timeline-content p {
+      margin: 0;
+    }
+
+    .timeline-item.active .timeline-content {
+      max-height: 350px;
+      padding: 0 20px 18px;
+    }
+
+    /* Интересные факты */
+
+    .facts {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 18px;
+      margin-top: 20px;
+    }
+
+    .fact {
+      background: #F5F1E8;
+      border: 1px solid #D9E1E6;
+      border-radius: 15px;
+      padding: 20px;
+    }
+
+    .fact strong {
+      display: block;
+      color: #244B68;
+      font-size: 18px;
+      margin-bottom: 8px;
+    }
+
+    /* Сегодня */
+
+    .phone-hint {
+      background: #F5F1E8;
+      border-left: 4px solid #416783;
+      padding: 15px 18px;
+      border-radius: 10px;
+      margin: 20px 0;
+    }
+
+    .phone-hint p {
+      margin: 5px 0 0;
+    }
+
+    .phone-area {
+      display: flex;
+      justify-content: center;
+      margin: 30px 0;
+    }
+
+    .phone {
+      width: 320px;
+      height: 650px;
+      background: #111;
+      border-radius: 40px;
+      padding: 10px;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
+      position: relative;
+    }
+
+    .phone-screen {
+      width: 100%;
+      height: 100%;
+      border-radius: 32px;
+      overflow: hidden;
+      position: relative;
+      background: #111;
+    }
+
+    .camera-screen {
+      position: absolute;
+      inset: 0;
+      background: #111;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    .camera-screen.hidden {
+      display: none;
+    }
+
+    .camera-photo {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: brightness(0.9) blur(8px);
+      transform: scale(1.04);
+      transition: filter 0.6s ease, transform 0.6s ease;
+    }
+
+    .camera-screen.photo-taken .camera-photo {
+      filter: brightness(0.9) blur(0);
+      transform: scale(1);
+    }
+
+    .camera-top {
+      position: absolute;
+      top: 14px;
+      left: 15px;
+      right: 15px;
+      z-index: 5;
+      display: flex;
+      justify-content: space-between;
+      color: white;
+      font-size: 13px;
+      font-weight: bold;
+      text-shadow: 0 2px 5px #000;
+    }
+
+    .camera-grid {
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      pointer-events: none;
+      background:
+        linear-gradient(to right,
+          transparent 32.8%,
+          rgba(255,255,255,0.35) 33%,
+          transparent 33.2%,
+          transparent 66.1%,
+          rgba(255,255,255,0.35) 66.3%,
+          transparent 66.5%),
+        linear-gradient(to bottom,
+          transparent 32.8%,
+          rgba(255,255,255,0.35) 33%,
+          transparent 33.2%,
+          transparent 66.1%,
+          rgba(255,255,255,0.35) 66.3%,
+          transparent 66.5%);
+    }
+
+    .camera-bottom {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 18px;
+      z-index: 8;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .shutter {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      border: 5px solid white;
+      background: rgba(255,255,255,0.2);
+      cursor: pointer;
+    }
+
+    .shutter:active {
+      transform: scale(0.94);
+    }
+
+    .gallery-button {
+      position: absolute;
+      left: 20px;
+      bottom: 25px;
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 2px solid white;
+      padding: 0;
+      cursor: pointer;
+      background: #222;
+      z-index: 15;
+    }
+
+    .gallery-button img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      pointer-events: none;
+    }
+
+    .switch-camera {
+      position: absolute;
+      right: 20px;
+      bottom: 25px;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      border: none;
+      background: rgba(0,0,0,0.45);
+      color: white;
+      font-size: 23px;
+      cursor: pointer;
+      z-index: 15;
+    }
+
+    .flash {
+      position: absolute;
+      inset: 0;
+      background: white;
+      z-index: 20;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .flash.active {
+      animation: flash 0.35s ease;
+    }
+
+    @keyframes flash {
+      0% { opacity: 0; }
+      30% { opacity: 0.95; }
+      100% { opacity: 0; }
+    }
+
+    .take-photo-hint {
+      position: absolute;
+      right: 42px;
+      bottom: 91px;
+      z-index: 9;
+      color: white;
+      font-size: 13px;
+      font-weight: bold;
+      line-height: 1.25;
+      text-align: center;
+      text-shadow: 0 2px 5px #000;
+      animation: hintFloat 1.2s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    .take-photo-hint .arrow {
+      display: block;
+      position: relative;
+      left: -45px;
+      font-size: 28px;
+      line-height: 0.8;
+      margin-top: 5px;
+      transform: rotate(8deg);
+    }
+
+    .camera-screen.photo-taken .take-photo-hint {
+      display: none;
+    }
+
+    @keyframes hintFloat {
+      0%, 100% {
+        transform: translateY(0);
+      }
+
+      50% {
+        transform: translateY(-5px);
+      }
+    }
+
+    /* Режимы камеры */
+
+    .camera-modes {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 112px;
+      z-index: 7;
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      padding: 0 10px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(8px);
+      transition: opacity 0.35s ease, transform 0.35s ease;
+    }
+
+    .camera-modes::-webkit-scrollbar {
+      display: none;
+    }
+
+    .camera-screen.photo-taken .camera-modes {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0);
+    }
+
+    .camera-mode {
+      flex: 0 0 auto;
+      border: none;
+      border-radius: 12px;
+      padding: 7px 10px;
+      background: rgba(0,0,0,0.55);
+      color: white;
+      font-size: 11px;
+      cursor: pointer;
+    }
+
+    .camera-mode.active {
+      background: white;
+      color: #244B68;
+    }
+
+    .mode-hint {
+      position: absolute;
+      left: 50%;
+      bottom: 174px;
+      transform: translateX(-50%);
+      z-index: 8;
+      width: max-content;
+      max-width: 82%;
+      padding: 7px 11px;
+      border-radius: 10px;
+      background: rgba(0, 0, 0, 0.58);
+      color: white;
+      font-size: 11px;
+      text-align: center;
+      line-height: 1.3;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+
+    .camera-screen.photo-taken .mode-hint.active {
+      opacity: 1;
+    }
+
+    /* Галерея */
+
+    .gallery-screen {
+      position: absolute;
+      inset: 0;
+      background: #111;
+      color: white;
+      z-index: 100;
+      display: none;
+      overflow-y: auto;
+      padding: 18px;
+    }
+
+    .gallery-screen.active {
+      display: block;
+    }
+
+    .gallery-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .back-camera {
+      border: none;
+      background: transparent;
+      color: white;
+      font-size: 25px;
+      cursor: pointer;
+      padding: 5px 8px;
+    }
+
+    .gallery-header h3 {
+      color: white;
+      margin: 0;
+      font-size: 20px;
+    }
+
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+
+    .gallery-photo {
+      border: none;
+      padding: 0;
+      background: none;
+      cursor: pointer;
+      border-radius: 8px;
+      overflow: hidden;
+      aspect-ratio: 1 / 1;
+    }
+
+    .gallery-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      pointer-events: none;
+    }
+
+    /* Просмотр фото */
+
+    .photo-viewer {
+      position: absolute;
+      inset: 0;
+      z-index: 200;
+      background: rgba(0,0,0,0.96);
+      display: none;
+      flex-direction: column;
+      padding: 18px;
+      overflow-y: auto;
+    }
+
+    .photo-viewer.active {
+      display: flex;
+    }
+
+    .close-viewer {
+      align-self: flex-end;
+      border: none;
+      background: transparent;
+      color: white;
+      font-size: 30px;
+      cursor: pointer;
+    }
+
+    .viewer-image {
+      width: 100%;
+      max-height: 390px;
+      object-fit: contain;
+      margin: 5px 0 18px;
+      border-radius: 8px;
+    }
+
+    .viewer-title {
+      color: white;
+      font-family: "Playfair Display", serif;
+      font-size: 21px;
+      margin: 0 0 8px;
+    }
+
+    .viewer-text {
+      color: #ddd;
+      font-size: 14px;
+      margin: 0;
+    }
+
+    footer {
+      background: #162D43;
+      color: #D9E6EE;
+      text-align: center;
+      padding: 25px 20px;
+      margin-top: 30px;
+    }
+
+    /* Всплывающее окно терминов */
+
+    .term-popup {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(22, 45, 67, 0.65);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .term-popup.active {
+      display: flex;
+    }
+
+    .term-box {
+      position: relative;
+      width: 100%;
+      max-width: 550px;
+      background: #FFFDF8;
+      border-radius: 18px;
+      padding: 30px;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    .term-box h3 {
+      margin-top: 0;
+      font-family: "Playfair Display", serif;
+      font-size: 25px;
+    }
+
+    .close-popup {
+      position: absolute;
+      right: 15px;
+      top: 10px;
+      border: none;
+      background: transparent;
+      font-size: 32px;
+      color: #244B68;
+      cursor: pointer;
+    }
+
+    @media (max-width: 800px) {
+
+      .people {
+        grid-template-columns: 1fr;
+      }
+
+      .person-card img {
+        height: 330px;
+      }
+
+      .facts {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 600px) {
+
+      header {
+        padding: 55px 16px;
+      }
+
+      header h1 {
+        font-size: 35px;
+      }
+
+      header p {
+        font-size: 16px;
+      }
+
+      main {
+        padding: 0 12px;
+        margin-top: 20px;
+      }
+
+      section {
+        padding: 22px 18px;
+      }
+
+      h2 {
+        font-size: 27px;
+      }
+
+      .person-card img {
+        height: 350px;
+      }
+
+      .take-photo-hint {
+        right: 30px;
+      }
+
+      .phone {
+        width: 300px;
+        height: 610px;
+      }
+    }
+
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h1>История фотографии</h1>
+  <p>От первых экспериментов до фотографии на смартфоне</p>
+</header>
+
+<nav>
+  <a href="#origin">Возникновение</a>
+  <a href="#development">Развитие</a>
+  <a href="#today">Сегодня</a>
+  <a href="#facts">Интересные факты</a>
+</nav>
+
+<main>
+
+  <!-- ВОЗНИКНОВЕНИЕ -->
+
+  <section id="origin">
+
+    <h2>Возникновение фотографии</h2>
+
+    <p>
+      История фотографии началась задолго до появления современных
+      фотоаппаратов. Учёные и изобретатели долго искали способ
+      сохранить изображение, которое создаёт свет.
+    </p>
+
+    <p>
+      Одним из предшественников фотографии была
+      <span class="term" data-term="camera">камера-обскура</span>.
+      Это простое устройство позволяло получать изображение окружающего
+      мира внутри затемнённой коробки или комнаты.
+    </p>
+
+    <p>
+      В XIX веке появились первые способы получения постоянных
+      фотографических изображений. Большую роль в этом сыграли
+      Ньепс, Дагер и Тальбот.
+    </p>
+
+    <div class="people">
+
+      <div class="person-card">
+
+        <img
+          src="https://commons.wikimedia.org/wiki/Special:FilePath/Posthumous%20portrait%20of%20Nic%C3%A9phore%20Ni%C3%A9pce.jpg"
+          alt="Жозеф Нисефор Ньепс"
+        >
+
+        <div class="person-info">
+
+          <h3>Жозеф Нисефор Ньепс</h3>
+
+          <p class="person-short">
+            Французский изобретатель, один из первых исследователей способов
+            получения постоянного изображения с помощью света.
+          </p>
+
+          <div class="person-more">
+
+            <p>
+              В 1826–1827 годах Ньепс сделал одну из первых сохранившихся
+              фотографий — снимок вида из окна своего дома в Ле-Гра.
+            </p>
+
+            <p>
+              Для этого он использовал светочувствительный материал и
+              оставлял его под воздействием света на очень долгое время.
+            </p>
+
+          </div>
+
+          <button class="person-more-button" type="button">
+            Узнать больше
+          </button>
+
+        </div>
+
+      </div>
+
+
+      <div class="person-card">
+
+        <img
+          src="https://commons.wikimedia.org/wiki/Special:FilePath/Louis%20Daguerre%201.jpg"
+          alt="Луи Дагер"
+        >
+
+        <div class="person-info">
+
+          <h3>Луи Дагер</h3>
+
+          <p class="person-short">
+            Французский художник и изобретатель, разработавший один из первых
+            практических фотографических процессов.
+          </p>
+
+          <div class="person-more">
+
+            <p>
+              В 1839 году Дагер представил
+              <span class="term" data-term="daguerreotype">дагеротипию</span>.
+              Этот процесс позволял получать детальные изображения
+              на специально обработанной металлической пластине.
+            </p>
+
+            <p>
+              Дагеротипия стала важным этапом в истории фотографии
+              и способствовала распространению фотографических изображений.
+            </p>
+
+          </div>
+
+          <button class="person-more-button" type="button">
+            Узнать больше
+          </button>
+
+        </div>
+
+      </div>
+
+
+      <div class="person-card">
+
+        <img
+          src="https://commons.wikimedia.org/wiki/Special:FilePath/Henry%20Fox%20Talbot%20001.jpg"
+          alt="Уильям Генри Фокс Тальбот"
+        >
+
+        <div class="person-info">
+
+          <h3>Уильям Генри Фокс Тальбот</h3>
+
+          <p class="person-short">
+            Английский учёный и изобретатель, разработавший процесс,
+            основанный на принципе «негатив — позитив».
+          </p>
+
+          <div class="person-more">
+
+            <p>
+              В 1840-х годах Тальбот разработал калотипию — фотографический
+              процесс, который позволял создавать несколько отпечатков
+              с одного негатива.
+            </p>
+
+            <p>
+              Именно принцип «негатив — позитив» стал важным шагом
+              к развитию фотографии и её массовому распространению.
+            </p>
+
+          </div>
+
+          <button class="person-more-button" type="button">
+            Узнать больше
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- РАЗВИТИЕ -->
+
+  <section id="development">
+
+    <h2>Развитие фотографии</h2>
+
+    <p>
+      После первых успешных экспериментов фотография постепенно становилась
+      более удобной и доступной. Менялись материалы, камеры и способы
+      получения изображений.
+    </p>
+
+    <div class="timeline">
+
+      <div class="timeline-item">
+        <button class="timeline-button" type="button">
+          <span>1820-е годы</span>
+          <span>+</span>
+        </button>
+
+        <div class="timeline-content">
+          <p>
+            Нисефор Ньепс проводил эксперименты со светочувствительными
+            материалами и получил одну из первых сохранившихся фотографий.
+          </p>
+        </div>
+      </div>
+
+      <div class="timeline-item">
+        <button class="timeline-button" type="button">
+          <span>1839 год</span>
+          <span>+</span>
+        </button>
+
+        <div class="timeline-content">
+          <p>
+            Луи Дагер представил
+            <span class="term" data-term="daguerreotype">дагеротипию</span>.
+            Новый процесс позволял получать достаточно подробные изображения
+            на металлических пластинах.
+          </p>
+        </div>
+      </div>
+
+      <div class="timeline-item">
+        <button class="timeline-button" type="button">
+          <span>1840-е годы</span>
+          <span>+</span>
+        </button>
+
+        <div class="timeline-content">
+          <p>
+            Уильям Генри Фокс Тальбот разработал калотипию,
+            основанную на принципе
+            <span class="term" data-term="negative">«негатив — позитив»</span>.
+            Это позволяло получать несколько отпечатков с одного негатива.
+          </p>
+        </div>
+      </div>
+
+      <div class="timeline-item">
+        <button class="timeline-button" type="button">
+          <span>Конец XIX века</span>
+          <span>+</span>
+        </button>
+
+        <div class="timeline-content">
+          <p>
+            Камеры становились проще и удобнее. Фотография постепенно
+            становилась доступной не только профессиональным фотографам,
+            но и обычным людям.
+          </p>
+        </div>
+      </div>
+
+      <div class="timeline-item">
+        <button class="timeline-button" type="button">
+          <span>XX век</span>
+          <span>+</span>
+        </button>
+
+        <div class="timeline-content">
+          <p>
+            Большое распространение получила
+            <span class="term" data-term="film">плёночная фотография</span>.
+            Фотоаппараты стали компактнее, а фотоплёнка позволила
+            делать фотографии значительно удобнее.
+          </p>
+        </div>
+      </div>
+
+      <div class="timeline-item">
+        <button class="timeline-button" type="button">
+          <span>Конец XX века</span>
+          <span>+</span>
+        </button>
+
+        <div class="timeline-content">
+          <p>
+            Начался переход от плёнки к
+            <span class="term" data-term="digital">цифровой фотографии</span>.
+            Изображения стали записываться в цифровом виде и храниться
+            на электронных носителях.
+          </p>
+        </div>
+      </div>
+
+      <div class="timeline-item">
+        <button class="timeline-button" type="button">
+          <span>XXI век</span>
+          <span>+</span>
+        </button>
+
+        <div class="timeline-content">
+          <p>
+            Камеры появились практически в каждом смартфоне.
+            Сегодня фотографию можно сделать, сразу посмотреть,
+            обработать и отправить другим людям.
+          </p>
+        </div>
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- СЕГОДНЯ -->
+
+  <section id="today">
+
+    <h2>Фотография сегодня</h2>
+
+    <p>
+      Сегодня телефон почти всегда находится у нас под рукой. Мы можем
+      в любой момент запечатлеть понравившийся момент, человека, красивый
+      вид или важное событие. Причём современные смартфоны позволяют
+      сохранять не только фотографии, но и видео.
+    </p>
+
+    <p>
+      Фотография стала намного доступнее: не нужно долго настраивать камеру,
+      проявлять плёнку или ждать печати снимка. Сделанный кадр можно сразу
+      посмотреть, отредактировать и отправить другим людям.
+    </p>
+
+    <div class="phone-hint">
+
+      <strong>Попробуйте сами:</strong>
+
+      <p>
+        Нажмите на кнопку 📸, чтобы сделать снимок, а затем откройте
+        галерею и посмотрите фотографии.
+      </p>
+
+    </div>
+
+
+    <div class="phone-area">
+
+      <div class="phone">
+
+        <div class="phone-screen">
+
+          <!-- КАМЕРА -->
+
+          <div class="camera-screen" id="cameraScreen">
+
+            <img
+              class="camera-photo"
+              src="https://commons.wikimedia.org/wiki/Special:FilePath/View_from_the_Window_at_Le_Gras%2C_Joseph_Nic%C3%A9phore_Ni%C3%A9pce.jpg"
+              alt="Вид из окна в Ле-Гра"
+            >
+
+            <div class="camera-grid"></div>
+
+            <div class="camera-top">
+              <span>13:37</span>
+              <span>HDR</span>
+              <span>1×</span>
+            </div>
+
+            <div class="take-photo-hint">
+              Нажми сюда,<br>
+              чтобы сделать фото
+              <span class="arrow">↘</span>
+            </div>
+
+            <div class="mode-hint" id="modeHint">
+              Портрет — размывает фон и выделяет человека.
+            </div>
+
+            <div class="camera-modes">
+
+              <button
+                class="camera-mode active"
+                type="button"
+                data-mode="portrait"
+              >
+                Портрет
+              </button>
+
+              <button
+                class="camera-mode"
+                type="button"
+                data-mode="night"
+              >
+                Ночь
+              </button>
+
+              <button
+                class="camera-mode"
+                type="button"
+                data-mode="panorama"
+              >
+                Панорама
+              </button>
+
+              <button
+                class="camera-mode"
+                type="button"
+                data-mode="slowmo"
+              >
+                Slo-Mo
+              </button>
+
+            </div>
+
+            <div class="camera-bottom">
+
+              <button
+                class="shutter"
+                id="takePhoto"
+                type="button"
+                aria-label="Сделать фотографию"
+              ></button>
+
+            </div>
+
+            <button
+              class="gallery-button"
+              id="openGallery"
+              type="button"
+              aria-label="Открыть галерею"
+            >
+              <img
+                src="https://commons.wikimedia.org/wiki/Special:FilePath/View_from_the_Window_at_Le_Gras%2C_Joseph_Nic%C3%A9phore_Ni%C3%A9pce.jpg"
+                alt="Галерея"
+              >
+            </button>
+
+            <button
+              class="switch-camera"
+              type="button"
+              aria-label="Переключить камеру"
+            >
+              ↻
+            </button>
+
+            <div class="flash" id="flash"></div>
+
+          </div>
+
+
+          <!-- ГАЛЕРЕЯ -->
+
+          <div class="gallery-screen" id="galleryScreen">
+
+            <div class="gallery-header">
+
+              <button
+                class="back-camera"
+                id="backCamera"
+                type="button"
+              >
+                ←
+              </button>
+
+              <h3>Галерея</h3>
+
+            </div>
+
+            <div class="gallery-grid">
+
+              <button
+                class="gallery-photo"
+                type="button"
+                data-photo="0"
+              >
+                <img
+                  src="https://commons.wikimedia.org/wiki/Special:FilePath/View_from_the_Window_at_Le_Gras%2C_Joseph_Nic%C3%A9phore_Ni%C3%A9pce.jpg"
+                  alt="Вид из окна в Ле-Гра"
+                >
+              </button>
+
+              <button
+                class="gallery-photo"
+                type="button"
+                data-photo="1"
+              >
+                <img
+                  src="https://commons.wikimedia.org/wiki/Special:FilePath/Anastasia%20%26%20Maria%20Romanova%20-%20selfies%2C%201914%20%281%20of%203%29%2001.jpg"
+                  alt="Автопортрет перед зеркалом"
+                >
+              </button>
+
+              <button
+                class="gallery-photo"
+                type="button"
+                data-photo="2"
+              >
+                <img
+                  src="https://commons.wikimedia.org/wiki/Special:FilePath/Mumler%20%28Lincoln%29.jpg"
+                  alt="Фотография с призраком"
+                >
+              </button>
+
+            </div>
+
+          </div>
+
+
+          <!-- ПРОСМОТР ФОТО -->
+
+          <div class="photo-viewer" id="photoViewer">
+
+            <button
+              class="close-viewer"
+              id="closeViewer"
+              type="button"
+            >
+              ×
+            </button>
+
+            <img
+              class="viewer-image"
+              id="viewerImage"
+              src=""
+              alt=""
+            >
+
+            <h3
+              class="viewer-title"
+              id="viewerTitle"
+            ></h3>
+
+            <p
+              class="viewer-text"
+              id="viewerText"
+            ></p>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <p>
+      Фотография продолжает развиваться вместе с технологиями. Сегодня
+      появляются новые возможности обработки изображений, искусственный
+      интеллект помогает создавать и изменять фотографии, а камеры
+      становятся всё более точными. При этом сама идея остаётся прежней —
+      сохранить изображение и передать его другим людям.
+    </p>
+
+  </section>
+
+
+  <!-- ИНТЕРЕСНЫЕ ФАКТЫ -->
+
+  <section id="facts">
+
+    <h2>Интересные факты</h2>
+
+    <div class="facts">
+
+      <div class="fact">
+
+        <strong>📦 Камеру могли сделать из сигарной коробки</strong>
+
+        Для экспериментов с фотографией использовали самые неожиданные
+        предметы. Например, американский учёный Джон Уильям Дрейпер
+        собрал одну из своих камер из сигарной коробки и линзы.
+
+      </div>
+
+      <div class="fact">
+
+        <strong>🖼️ Фотографы XIX века имели свой «Фотошоп»</strong>
+
+        Можно сказать, что у фотографов XIX века был собственный
+        «Фотошоп». Они могли изменять снимки: убирать людей,
+        добавлять новые детали и объединять несколько фотографий
+        в одну — и всё это задолго до появления компьютеров.
+
+      </div>
+
+      <div class="fact">
+
+        <strong>🤳 Первое селфи появилось почти 200 лет назад</strong>
+
+        В 1839 году Роберт Корнелиус сделал автопортрет с помощью
+        ранней фотокамеры. Ему пришлось снять крышку с объектива,
+        быстро встать перед камерой и снова закрыть объектив.
+
+      </div>
+
+      <div class="fact">
+
+        <strong>🪞 Зеркальные селфи появились задолго до смартфонов</strong>
+
+        В 1913 году великая княжна Анастасия сделала собственное фото
+        в зеркале — с камерой, установленной перед ним.
+        То есть идея mirror selfie старше 100 лет.
+
+      </div>
+
+      <div class="fact">
+
+        <strong>📸 Фотобудки появились почти 100 лет назад</strong>
+
+        В 1920-х можно было зайти в автомат, получить несколько
+        своих фотографий и сделать это без фотографа.
+
+      </div>
+
+    </div>
+
+  </section>
+
+</main>
+
+
+<footer>
+  Индивидуальный проект Коньшиной Виктории· История фотографии
+</footer>
+
+
+<!-- ОКНО ТЕРМИНОВ -->
+
+<div class="term-popup" id="termPopup">
+
+  <div class="term-box">
+
+    <button
+      class="close-popup"
+      id="closePopup"
+      type="button"
+    >
+      ×
+    </button>
+
+    <h3 id="termTitle"></h3>
+
+    <p id="termText"></p>
+
+  </div>
+
+</div>
+
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+  /* =========================
+     КАРТОЧКИ ЛЮДЕЙ
+  ========================= */
+
+  const personButtons =
+    document.querySelectorAll(".person-more-button");
+
+  personButtons.forEach(function (button) {
+
+    button.addEventListener("click", function () {
+
+      const card =
+        button.closest(".person-card");
+
+      card.classList.toggle("active");
+
+      if (card.classList.contains("active")) {
+        button.textContent = "Скрыть";
+      } else {
+        button.textContent = "Узнать больше";
+      }
+
+    });
+
+  });
+
+
+  /* =========================
+     ТАЙМЛАЙН
+  ========================= */
+
+  const timelineButtons =
+    document.querySelectorAll(".timeline-button");
+
+  timelineButtons.forEach(function (button) {
+
+    button.addEventListener("click", function () {
+
+      const item =
+        button.parentElement;
+
+      const icon =
+        button.querySelector("span:last-child");
+
+      item.classList.toggle("active");
+
+      if (item.classList.contains("active")) {
+        icon.textContent = "−";
+      } else {
+        icon.textContent = "+";
+      }
+
+    });
+
+  });
+
+
+  /* =========================
+     ТЕРМИНЫ
+  ========================= */
+
+  const terms = {
+
+    camera: {
+      title: "📷 Камера-обскура",
+      text:
+        "Простейшее оптическое устройство, представляющее собой затемнённую коробку или комнату с небольшим отверстием. Свет через отверстие создаёт на противоположной поверхности перевёрнутое изображение."
+    },
+
+    daguerreotype: {
+      title: "📸 Дагеротипия",
+      text:
+        "Один из первых практических фотографических процессов, разработанный Луи Дагером. Изображение получали на специально обработанной металлической пластине. Каждый снимок был уникальным."
+    },
+
+    negative: {
+      title: "🎞️ «Негатив — позитив»",
+      text:
+        "Негатив — изображение, в котором светлые и тёмные участки выглядят наоборот. С негатива можно было получать позитивные отпечатки — изображения с обычным распределением светлых и тёмных участков."
+    },
+
+    film: {
+      title: "🎞️ Плёночная фотография",
+      text:
+        "Способ создания фотографий с использованием светочувствительной фотоплёнки. После съёмки плёнку необходимо было проявить, а затем получить с неё фотографические отпечатки."
+    },
+
+    digital: {
+      title: "💻 Цифровая фотография",
+      text:
+        "Способ создания фотографий, при котором изображение записывается в цифровом виде с помощью электронного сенсора камеры. Такие фотографии можно сразу просматривать, редактировать и передавать."
+    }
+
+  };
+
+
+  const termPopup =
+    document.getElementById("termPopup");
+
+  const termTitle =
+    document.getElementById("termTitle");
+
+  const termText =
+    document.getElementById("termText");
+
+  const closePopup =
+    document.getElementById("closePopup");
+
+
+  document.querySelectorAll(".term").forEach(function (term) {
+
+    term.addEventListener("click", function () {
+
+      const data =
+        terms[term.dataset.term];
+
+      if (!data) return;
+
+      termTitle.textContent =
+        data.title;
+
+      termText.textContent =
+        data.text;
+
+      termPopup.classList.add("active");
+
+    });
+
+  });
+
+
+  closePopup.addEventListener("click", function () {
+    termPopup.classList.remove("active");
+  });
+
+
+  termPopup.addEventListener("click", function (event) {
+
+    if (event.target === termPopup) {
+      termPopup.classList.remove("active");
+    }
+
+  });
+
+
+  document.addEventListener("keydown", function (event) {
+
+    if (event.key === "Escape") {
+      termPopup.classList.remove("active");
+    }
+
+  });
+
+
+  /* =========================
+     КАМЕРА
+  ========================= */
+
+  const cameraScreen =
+    document.getElementById("cameraScreen");
+
+  const takePhoto =
+    document.getElementById("takePhoto");
+
+  const flash =
+    document.getElementById("flash");
+
+
+  takePhoto.addEventListener("click", function () {
+
+    flash.classList.remove("active");
+
+    void flash.offsetWidth;
+
+    flash.classList.add("active");
+
+    cameraScreen.classList.add("photo-taken");
+
+  });
+
+
+  /* =========================
+     РЕЖИМЫ КАМЕРЫ
+  ========================= */
+
+  const modeDescriptions = {
+
+    portrait:
+      "Портрет — размывает фон и выделяет человека.",
+
+    night:
+      "Ночь — помогает делать снимки при слабом освещении.",
+
+    panorama:
+      "Панорама — позволяет создать широкий снимок.",
+
+    slowmo:
+      "Slo-Mo — записывает движение в замедленном виде."
+
+  };
+
+
+  const modeHint =
+    document.getElementById("modeHint");
+
+
+  document.querySelectorAll(".camera-mode").forEach(function (button) {
+
+    button.addEventListener("click", function () {
+
+      document.querySelectorAll(".camera-mode").forEach(function (mode) {
+        mode.classList.remove("active");
+      });
+
+      button.classList.add("active");
+
+      const mode =
+        button.dataset.mode;
+
+      modeHint.textContent =
+        modeDescriptions[mode];
+
+      modeHint.classList.add("active");
+
+    });
+
+  });
+
+
+  /* =========================
+     ФОТОГРАФИИ
+  ========================= */
+
+  const photos = [
+
+    {
+      image:
+        "https://commons.wikimedia.org/wiki/Special:FilePath/View_from_the_Window_at_Le_Gras%2C_Joseph_Nic%C3%A9phore_Ni%C3%A9pce.jpg",
+
+      title:
+        "Вид из окна в Ле-Гра",
+
+      text:
+        "Нисефор Ньепс, 1826–1827 гг. Одна из первых сохранившихся фотографий, полученных с помощью камеры."
+    },
+
+    {
+      image:
+        "https://commons.wikimedia.org/wiki/Special:FilePath/Anastasia%20%26%20Maria%20Romanova%20-%20selfies%2C%201914%20%281%20of%203%29%2001.jpg",
+
+      title:
+        "Автопортрет перед зеркалом",
+
+      text:
+        "Великая княжна Анастасия и её сестра Мария, 1914 год. Анастасия фотографировала себя перед зеркалом с помощью камеры Kodak Brownie."
+    },
+
+    {
+      image:
+        "https://commons.wikimedia.org/wiki/Special:FilePath/Mumler%20%28Lincoln%29.jpg",
+
+      title:
+        "Фотография с «призраком»",
+
+      text:
+        "Уильям Мамлер, около 1872 года. На фотографии Мэри Тодд Линкольн и изображение, которое воспринимали как призрак её мужа Авраама Линкольна. Подобные снимки относятся к так называемой «духовной фотографии»."
+    }
+
+  ];
+
+
+  /* =========================
+     ГАЛЕРЕЯ
+     ИСПРАВЛЕННАЯ ВЕРСИЯ
+  ========================= */
+
+  const openGallery =
+    document.getElementById("openGallery");
+
+  const galleryScreen =
+    document.getElementById("galleryScreen");
+
+  const backCamera =
+    document.getElementById("backCamera");
+
+
+  function openGalleryScreen() {
+
+    cameraScreen.classList.add("hidden");
+
+    galleryScreen.classList.add("active");
+
+    galleryScreen.style.display = "block";
+
+  }
+
+
+  function closeGalleryScreen() {
+
+    galleryScreen.classList.remove("active");
+
+    galleryScreen.style.display = "none";
+
+    cameraScreen.classList.remove("hidden");
+
+  }
+
+
+  openGallery.addEventListener("click", function (event) {
+
+    event.preventDefault();
+
+    event.stopPropagation();
+
+    openGalleryScreen();
+
+  });
+
+
+  backCamera.addEventListener("click", function (event) {
+
+    event.preventDefault();
+
+    event.stopPropagation();
+
+    closeGalleryScreen();
+
+  });
+
+
+  /* Дополнительная страховка для Kodo */
+
+  document.addEventListener("click", function (event) {
+
+    const galleryButton =
+      event.target.closest("#openGallery");
+
+    if (galleryButton) {
+
+      event.preventDefault();
+
+      openGalleryScreen();
+
+    }
+
+  });
+
+
+  /* =========================
+     ПРОСМОТР ФОТО
+  ========================= */
+
+  const photoViewer =
+    document.getElementById("photoViewer");
+
+  const viewerImage =
+    document.getElementById("viewerImage");
+
+  const viewerTitle =
+    document.getElementById("viewerTitle");
+
+  const viewerText =
+    document.getElementById("viewerText");
+
+  const closeViewer =
+    document.getElementById("closeViewer");
+
+
+  document.querySelectorAll(".gallery-photo").forEach(function (button) {
+
+    button.addEventListener("click", function () {
+
+      const index =
+        Number(button.dataset.photo);
+
+      const photo =
+        photos[index];
+
+      if (!photo) return;
+
+      viewerImage.src =
+        photo.image;
+
+      viewerImage.alt =
+        photo.title;
+
+      viewerTitle.textContent =
+        photo.title;
+
+      viewerText.textContent =
+        photo.text;
+
+      photoViewer.classList.add("active");
+
+    });
+
+  });
+
+
+  closeViewer.addEventListener("click", function () {
+
+    photoViewer.classList.remove("active");
+
+  });
+
+
+});
+
+</script>
+
+</body>
+</html>
